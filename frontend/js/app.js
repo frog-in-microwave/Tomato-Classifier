@@ -98,15 +98,8 @@ document.addEventListener("DOMContentLoaded", () => {
     resultEl.classList.add("hidden");
   }
 
-  function softmax(logits) {
-    const max = Math.max(...logits);
-    const exps = logits.map((v) => Math.exp(v - max));
-    const sum = exps.reduce((a, b) => a + b, 0);
-    return exps.map((v) => v / sum);
-  }
-
   // Matches your backend's actual response shape:
-  //   { "predictions": [<6 raw logits>], "class": "<top class name>" }
+  //   { "predictions": [<6 probabilities, softmaxed server-side>], "class": "<top class name>" }
   // Also falls back to a couple of other common shapes so this keeps
   // working if the backend response ever changes.
   function normalizeResponse(data) {
@@ -122,12 +115,10 @@ document.addEventListener("DOMContentLoaded", () => {
           : null;
 
     if (rawArr) {
-      // Your model's forward pass has no softmax applied, so these are
-      // raw logits — convert to probabilities before showing percentages.
-      const probs = softmax(rawArr.map(Number));
-      entries = probs.map((p, i) => [
+      // Backend applies softmax before returning, so these already sum to 1.
+      entries = rawArr.map((score, i) => [
         CONFIG.CLASS_NAMES[i] || `Class ${i + 1}`,
-        p,
+        Number(score),
       ]);
       if (typeof data?.class === "string") {
         topOverrideName = data.class;
