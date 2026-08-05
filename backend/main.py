@@ -69,8 +69,9 @@ async def predict(file: UploadFile):
 
     with torch.no_grad():
         predictions = model(image)
-        print(predictions[0])
+        probabilities = torch.softmax(predictions, dim=1)
     return {"predictions": predictions.tolist()[0],
-            "class": classes[predictions.argmax().item()]}
+            "class": classes[predictions.argmax().item()],
+            "probabilities": probabilities.tolist()[0],}
 
 

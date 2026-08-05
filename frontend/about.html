@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>About — Leaf Diagnostics</title>
+<meta name="description" content="How the tomato leaf disease classifier works: dataset, model architecture, and stack." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="index.html" class="logo"><span class="dot"></span><b>Leaf</b><span>Diagnostics</span></a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="site-nav">
+      <a href="index.html">Diagnose</a>
+      <a href="about.html" class="is-active">About the project</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <section class="hero" style="padding-bottom: 0;">
+      <p class="eyebrow">About the project</p>
+      <h1 style="font-size: clamp(1.8rem, 7vw, 2.6rem);">A closer look at<br>the model behind it.</h1>
+      <p class="lead">
+        Leaf Diagnostics classifies tomato leaf photos into six conditions
+        using a convolutional neural network trained from scratch in
+        PyTorch. Here's how it's built, end to end.
+      </p>
+    </section>
+
+    <section class="section">
+      <div class="section-grid">
+        <div>
+          <h2>How a scan works</h2>
+          <p>Three steps happen between choosing a photo and seeing a diagnosis.</p>
+        </div>
+        <div class="steps">
+          <div class="step">
+            <span class="step-num">1</span>
+            <div class="step-body">
+              <h3>Upload</h3>
+              <p>A leaf photo is selected or dropped in from your device, and previewed before anything is sent.</p>
+            </div>
+          </div>
+          <div class="step">
+            <span class="step-num">2</span>
+            <div class="step-body">
+              <h3>Inference</h3>
+              <p>The image is posted to a Flask/PyTorch backend on Render, where the trained CNN scores it against six classes.</p>
+            </div>
+          </div>
+          <div class="step">
+            <span class="step-num">3</span>
+            <div class="step-body">
+              <h3>Reading</h3>
+              <p>Scores come back, get sorted by confidence, and are rendered as the readout you see on the diagnose page.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-grid">
+        <div>
+          <h2>The model</h2>
+          <p>
+            A custom CNN — not a fine-tuned off-the-shelf network — built and
+            trained specifically for this dataset in PyTorch, using Google
+            Colab for GPU training.
+          </p>
+        </div>
+        <dl class="spec-list">
+          <div class="spec-row"><dt>Architecture</dt><dd>Custom CNN (convolutional + pooling stack)</dd></div>
+          <div class="spec-row"><dt>Framework</dt><dd>PyTorch</dd></div>
+          <div class="spec-row"><dt>Classes</dt><dd>6</dd></div>
+          <div class="spec-row"><dt>Validation accuracy</dt><dd>~95%</dd></div>
+          <div class="spec-row"><dt>Training environment</dt><dd>Google Colab (GPU)</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>The six classes</h2>
+      <p>Every photo is scored against each of the following, and the highest score wins.</p>
+      <div class="class-grid">
+        <div class="class-chip">Class 1 — replace with your label</div>
+        <div class="class-chip">Class 2 — replace with your label</div>
+        <div class="class-chip">Class 3 — replace with your label</div>
+        <div class="class-chip">Class 4 — replace with your label</div>
+        <div class="class-chip">Class 5 — replace with your label</div>
+        <div class="class-chip">Class 6 — replace with your label</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-grid">
+        <div>
+          <h2>The stack</h2>
+          <p>Frontend and backend are deployed separately, talking over a single POST endpoint.</p>
+        </div>
+        <dl class="spec-list">
+          <div class="spec-row"><dt>Frontend</dt><dd>HTML, CSS, vanilla JS</dd></div>
+          <div class="spec-row"><dt>Backend</dt><dd>Python, PyTorch model server</dd></div>
+          <div class="spec-row"><dt>Hosting</dt><dd>Render</dd></div>
+          <div class="spec-row"><dt>Endpoint</dt><dd>POST /predict</dd></div>
+        </dl>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>Built with a custom CNN in PyTorch, served from Render.</p>
+  </div>
+</footer>
+
+<script src="js/nav.js"></script>
+</body>
+</html>
