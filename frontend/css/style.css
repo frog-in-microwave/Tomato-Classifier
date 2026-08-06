@@ -334,6 +334,140 @@ main {
 .corner.bl { bottom: 10px; left: 10px; border-right: none; border-top: none; }
 .corner.br { bottom: 10px; right: 10px; border-left: none; border-top: none; }
 
+.actual-tag {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  right: 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  background: rgba(16, 20, 13, 0.82);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 9px;
+  backdrop-filter: blur(2px);
+}
+
+.sample-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  margin-top: 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--green-dim);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 13.5px;
+  font-family: var(--font-body);
+  text-align: center;
+  cursor: pointer;
+  padding: 12px 14px;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.08s ease;
+}
+
+.sample-trigger svg {
+  width: 17px;
+  height: 17px;
+  color: var(--green);
+  flex: none;
+}
+
+.sample-trigger b {
+  color: var(--green);
+  font-weight: 600;
+}
+
+.sample-trigger:hover {
+  border-color: var(--green);
+  background: #212b19;
+}
+
+.sample-trigger:active {
+  transform: scale(0.99);
+}
+
+.sample-gallery {
+  margin-top: 14px;
+}
+
+.sample-gallery-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.sample-gallery-head .eyebrow {
+  margin: 0;
+}
+
+.sample-gallery-actions {
+  display: flex;
+  gap: 8px;
+  flex: none;
+}
+
+.btn-small {
+  flex: none;
+  padding: 6px 12px;
+  font-size: 12.5px;
+}
+
+.sample-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.sample-thumb {
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  transition: border-color 0.15s ease;
+}
+
+.sample-thumb:hover,
+.sample-thumb:focus-visible {
+  border-color: var(--green-dim);
+}
+
+.sample-thumb img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.sample-thumb .sample-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 7px 9px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.sample-thumb.is-loading {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.match-badge {
+  margin-top: 10px;
+  display: inline-block;
+  transform: none;
+}
+
 .scan-line {
   position: absolute;
   left: 0;

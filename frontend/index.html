@@ -51,6 +51,27 @@
             <input type="file" id="file-input" accept="image/*" aria-label="Upload a leaf photo" />
           </div>
 
+          <button type="button" class="sample-trigger" id="sample-trigger">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7" rx="1"/>
+              <rect x="14" y="3" width="7" height="7" rx="1"/>
+              <rect x="3" y="14" width="7" height="7" rx="1"/>
+              <rect x="14" y="14" width="7" height="7" rx="1"/>
+            </svg>
+            <span>Don't have a leaf photo? <b>Try a test sample</b></span>
+          </button>
+
+          <div class="sample-gallery hidden" id="sample-gallery">
+            <div class="sample-gallery-head">
+              <p class="eyebrow">Test samples · one per class</p>
+              <div class="sample-gallery-actions">
+                <button type="button" class="btn-ghost btn-small" id="gallery-refetch">Refetch</button>
+                <button type="button" class="btn-ghost btn-small" id="gallery-back">Back</button>
+              </div>
+            </div>
+            <div class="sample-grid" id="sample-grid"></div>
+          </div>
+
           <div class="preview-frame hidden" id="preview-frame">
             <img id="preview-img" alt="Uploaded leaf preview" />
             <div class="corner tl"></div>
@@ -58,6 +79,7 @@
             <div class="corner bl"></div>
             <div class="corner br"></div>
             <div class="scan-line hidden" id="scan-line"></div>
+            <div class="actual-tag hidden" id="actual-tag"></div>
           </div>
 
           <p class="scan-status hidden" id="scan-status"></p>

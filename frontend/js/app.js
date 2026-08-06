@@ -13,13 +13,16 @@ const CONFIG = {
   // The 6 class names, IN THE EXACT ORDER your model's `classes` list
   // uses server-side (same order the logits/argmax correspond to).
   CLASS_NAMES: [
-    "Class 1",
-    "Class 2",
-    "Class 3",
-    "Class 4",
-    "Class 5",
-    "Class 6",
+    "early_blight",
+    "healthy",
+    "late_blight",
+    "leaf_mold",
+    "leaf_yellow_curl_virus",
+    "septoria_leaf_spot",
   ],
+
+  // Path to your manifest of sample image URLs, grouped by category
+  SAMPLES_URL: "data/image_urls.json",
 };
 // =====================================================================
 
@@ -36,10 +39,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const resultEl = document.getElementById("result");
   const errorBox = document.getElementById("error-box");
   const errorMsg = document.getElementById("error-msg");
+  const sampleTrigger = document.getElementById("sample-trigger");
+  const sampleGallery = document.getElementById("sample-gallery");
+  const sampleGrid = document.getElementById("sample-grid");
+  const galleryBack = document.getElementById("gallery-back");
+  const galleryRefetch = document.getElementById("gallery-refetch");
+  const actualTag = document.getElementById("actual-tag");
 
   let currentFile = null;
   let objectUrl = null;
   let slowHintTimer = null;
+  let samplesManifest = null;
+  let isSampleMode = false;
+  let currentTrueLabel = null;
 
   // ---------- helpers ----------
 
@@ -48,8 +60,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (objectUrl) URL.revokeObjectURL(objectUrl);
     objectUrl = null;
     fileInput.value = "";
+    isSampleMode = false;
+    currentTrueLabel = null;
     previewFrame.classList.add("hidden");
     dropzone.classList.remove("hidden");
+    sampleTrigger.classList.remove("hidden");
+    sampleGallery.classList.add("hidden");
+    actualTag.classList.add("hidden");
     analyzeBtn.classList.add("hidden");
     resetBtn.classList.add("hidden");
     resultEl.classList.add("hidden");
@@ -65,6 +82,8 @@ document.addEventListener("DOMContentLoaded", () => {
     objectUrl = URL.createObjectURL(file);
     previewImg.src = objectUrl;
     dropzone.classList.add("hidden");
+    sampleTrigger.classList.add("hidden");
+    sampleGallery.classList.add("hidden");
     previewFrame.classList.remove("hidden");
     analyzeBtn.classList.remove("hidden");
     resetBtn.classList.remove("hidden");
@@ -96,6 +115,71 @@ document.addEventListener("DOMContentLoaded", () => {
     errorMsg.textContent = message;
     errorBox.classList.remove("hidden");
     resultEl.classList.add("hidden");
+  }
+
+  // ---------- sample gallery ----------
+
+  async function loadSamplesManifest() {
+    if (samplesManifest) return samplesManifest;
+    const res = await fetch(CONFIG.SAMPLES_URL);
+    if (!res.ok) throw new Error(`Couldn't load sample list (${res.status}).`);
+    samplesManifest = await res.json(); // { "Category": ["url", ...], ... }
+    return samplesManifest;
+  }
+
+  function pickOnePerCategory(manifest) {
+    return Object.entries(manifest)
+      .filter(([, urls]) => Array.isArray(urls) && urls.length > 0)
+      .map(([label, urls]) => ({
+        label,
+        url: urls[Math.floor(Math.random() * urls.length)],
+      }));
+  }
+
+  function renderGallery(samples) {
+    sampleGrid.innerHTML = "";
+    samples.forEach((sample) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "sample-thumb";
+      btn.innerHTML = `
+        <img src="${sample.url}" alt="${escapeHtml(sample.label)} sample leaf" loading="lazy"  crossorigin="anonymous"  />
+        <span class="sample-label">${escapeHtml(sample.label)}</span>
+      `;
+      btn.addEventListener("click", () => selectSample(sample, btn));
+      sampleGrid.appendChild(btn);
+    });
+  }
+
+  // Fetches an ImageKit URL and turns it into a File so it can flow through
+  // the same FormData/analyze path as a manual upload.
+  async function urlToFile(url) {
+    const res = await fetch(url);
+    if (!res.ok)
+      throw new Error(`Couldn't load that sample image (${res.status}).`);
+    const blob = await res.blob();
+    const filename = url.split("/").pop().split("?")[0] || "sample.jpg";
+    return new File([blob], filename, { type: blob.type || "image/jpeg" });
+  }
+
+  async function selectSample(sample, btnEl) {
+    btnEl.classList.add("is-loading");
+    try {
+      const file = await urlToFile(sample.url);
+      isSampleMode = true;
+      currentTrueLabel = sample.label;
+      showPreview(file);
+      actualTag.textContent = `Actual: ${sample.label} — test sample`;
+      actualTag.classList.remove("hidden");
+    } catch (err) {
+      console.error(err);
+      showError(
+        "Couldn't load that sample image. This is usually a CORS setting on the ImageKit " +
+          "delivery domain — check that cross-origin GET is allowed, or try another sample.",
+      );
+    } finally {
+      btnEl.classList.remove("is-loading");
+    }
   }
 
   // Matches your backend's actual response shape:
@@ -157,6 +241,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const [topName, topScore] = entries[0];
     const isHealthy = /healthy/i.test(topName);
 
+    let matchBadgeHtml = "";
+    if (isSampleMode && currentTrueLabel) {
+      const normalize = (s) =>
+        s
+          .toLowerCase()
+          .replace(/[_\-]+/g, " ")
+          .trim();
+      const isMatch = normalize(topName) === normalize(currentTrueLabel);
+      matchBadgeHtml = `
+        <span class="badge match-badge ${isMatch ? "" : "is-alert"}">
+          ${isMatch ? "✓ Model agrees" : "✗ Model disagrees"}
+        </span>`;
+    }
+
     resultEl.innerHTML = "";
 
     const top = document.createElement("div");
@@ -166,6 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <p class="eyebrow ${isHealthy ? "" : "is-alert"}">Diagnosis</p>
         <h2 class="result-title">${escapeHtml(topName)}</h2>
         <p class="result-confidence"><b>${(topScore * 100).toFixed(1)}%</b> confidence</p>
+        ${matchBadgeHtml}
       </div>
       <span class="badge ${isHealthy ? "" : "is-alert"}">${isHealthy ? "Healthy" : "Disease detected"}</span>
     `;
@@ -240,7 +339,52 @@ document.addEventListener("DOMContentLoaded", () => {
 
   fileInput.addEventListener("change", () => {
     const file = fileInput.files?.[0];
-    if (file) showPreview(file);
+    if (file) {
+      isSampleMode = false;
+      currentTrueLabel = null;
+      showPreview(file);
+    }
+  });
+
+  sampleTrigger.addEventListener("click", async () => {
+    sampleTrigger.disabled = true;
+    try {
+      const manifest = await loadSamplesManifest();
+      const samples = pickOnePerCategory(manifest);
+      renderGallery(samples);
+      dropzone.classList.add("hidden");
+      sampleTrigger.classList.add("hidden");
+      sampleGallery.classList.remove("hidden");
+    } catch (err) {
+      console.error(err);
+      showError(
+        "Couldn't load the test samples. Check CONFIG.SAMPLES_URL in app.js.",
+      );
+    } finally {
+      sampleTrigger.disabled = false;
+    }
+  });
+
+  galleryBack.addEventListener("click", () => {
+    sampleGallery.classList.add("hidden");
+    dropzone.classList.remove("hidden");
+    sampleTrigger.classList.remove("hidden");
+  });
+
+  galleryRefetch.addEventListener("click", async () => {
+    galleryRefetch.disabled = true;
+    try {
+      const manifest = await loadSamplesManifest();
+      const samples = pickOnePerCategory(manifest);
+      renderGallery(samples);
+    } catch (err) {
+      console.error(err);
+      showError(
+        "Couldn't refetch the test samples. Check CONFIG.SAMPLES_URL in app.js.",
+      );
+    } finally {
+      galleryRefetch.disabled = false;
+    }
   });
 
   ["dragenter", "dragover"].forEach((evt) =>
@@ -261,6 +405,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const file = e.dataTransfer?.files?.[0];
     if (file && file.type.startsWith("image/")) {
       fileInput.files = e.dataTransfer.files;
+      isSampleMode = false;
+      currentTrueLabel = null;
       showPreview(file);
     }
   });
