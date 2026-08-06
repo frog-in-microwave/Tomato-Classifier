@@ -7,7 +7,7 @@ checkpoint = torch.load(
     "weights/model_mid_lr.pth",
     map_location="cpu"
 )
-
+print(checkpoint["validation_accuracy"])
 model.load_state_dict(checkpoint["model_state"])
 
 
