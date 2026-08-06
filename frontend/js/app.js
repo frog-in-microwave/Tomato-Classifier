@@ -190,8 +190,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let entries = null;
     let topOverrideName = null;
 
-    const rawArr = Array.isArray(data?.predictions)
-      ? data.predictions
+    const rawArr = Array.isArray(data?.probabilities)
+      ? data.probabilities
       : Array.isArray(data?.scores)
         ? data.scores
         : Array.isArray(data)
@@ -320,6 +320,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const data = await res.json();
+      console.log("Backend response:", data);
       const entries = normalizeResponse(data);
       renderResult(entries);
     } catch (err) {
