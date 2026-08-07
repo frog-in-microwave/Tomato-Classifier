@@ -730,6 +730,16 @@ main {
   margin: 0 0 14px;
 }
 
+.section code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--border-soft);
+  border-radius: 4px;
+  padding: 1px 6px;
+}
+
 .spec-list {
   display: grid;
   gap: 10px;
@@ -816,6 +826,186 @@ main {
   background: var(--surface);
 }
 
+/* ---------- architecture / code block (about page) ---------- */
+
+.architecture-block {
+  margin-top: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  overflow-x: auto;
+}
+
+.architecture-block pre {
+  margin: 0;
+}
+
+.architecture-block code {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--text-muted);
+  white-space: pre;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+/* ---------- network diagram (about page) ---------- */
+
+.arch-diagram {
+  margin-top: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px 14px;
+  overflow-x: auto;
+}
+
+.arch-diagram svg {
+  display: block;
+  width: 100%;
+  min-width: 640px;
+  height: auto;
+}
+
+.arch-diagram .diagram-caption {
+  margin: 10px 0 0;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-faint);
+  max-width: none;
+}
+
+.node-input {
+  fill: var(--surface-2);
+  stroke: var(--border);
+  stroke-width: 1.5;
+}
+
+.node-conv {
+  fill: var(--surface-2);
+  stroke: var(--green-dim);
+  stroke-width: 1.5;
+}
+
+.node-flatten {
+  fill: var(--surface-2);
+  stroke: var(--text-faint);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 2;
+}
+
+.node-fc {
+  fill: var(--surface-2);
+  stroke: var(--green-dim);
+  stroke-width: 1.5;
+}
+
+.node-output {
+  fill: var(--green);
+  stroke: var(--green);
+  stroke-width: 1.5;
+}
+
+.diagram-line {
+  stroke: var(--border);
+  stroke-width: 1.5;
+}
+
+.diagram-arrowhead {
+  fill: var(--text-faint);
+}
+
+.diagram-label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  fill: var(--text);
+  text-anchor: middle;
+}
+
+.diagram-sublabel {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  fill: var(--text-faint);
+  text-anchor: middle;
+}
+
+/* ---------- before / after comparison (about page) ---------- */
+
+.compare-grid {
+  display: grid;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.compare-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+}
+
+.compare-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 0 0 12px;
+  color: var(--text-faint);
+}
+
+.compare-card.is-before .compare-label {
+  color: var(--red);
+}
+
+.compare-card.is-after .compare-label {
+  color: var(--green);
+}
+
+.compare-card ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--text-muted);
+  font-size: 13.5px;
+  line-height: 1.7;
+}
+
+.compare-card.is-before {
+  border-color: var(--red-dim);
+}
+
+.compare-card.is-after {
+  border-color: var(--green-dim);
+}
+
+/* ---------- note box (about page) ---------- */
+
+.note-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+}
+
+.note-box b {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 8px;
+}
+
+.note-box p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  max-width: none;
+}
+
 /* ---------- footer ---------- */
 
 .site-footer {
@@ -862,6 +1052,10 @@ main {
 
   .class-grid {
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  .compare-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 

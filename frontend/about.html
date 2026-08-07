@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>About — Leaf Diagnostics</title>
-<meta name="description" content="How the tomato leaf disease classifier works: dataset, model architecture, and stack." />
+<meta name="description" content="Leaf Diagnostics: a free tomato leaf disease classifier for Lebanese farmers. Dataset, preprocessing, model architecture, training, and results." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -27,14 +27,253 @@
 
 <main>
   <div class="wrap">
+
     <section class="hero" style="padding-bottom: 0;">
-      <p class="eyebrow">About the project</p>
-      <h1 style="font-size: clamp(1.8rem, 7vw, 2.6rem);">A closer look at<br>the model behind it.</h1>
+      <p class="eyebrow">Final project — LebNet Tech Fellows, AI course</p>
+      <h1 style="font-size: clamp(1.8rem, 7vw, 2.6rem);">A free first read on<br>a sick tomato leaf.</h1>
       <p class="lead">
-        Leaf Diagnostics classifies tomato leaf photos into six conditions
-        using a convolutional neural network trained from scratch in
-        PyTorch. Here's how it's built, end to end.
+        Leaf Diagnostics is a convolutional neural network, trained from
+        scratch in PyTorch, that sorts a photo of a tomato leaf into one of
+        six categories: healthy, or one of five common diseases. It doesn't
+        replace a lab test — but a lab test costs money and time that a lot
+        of farmers in Lebanon don't currently have. This page walks through
+        why the project exists and how it was built.
       </p>
+    </section>
+
+    <section class="section">
+      <div class="section-grid">
+        <div>
+          <h2>Why this exists</h2>
+          <p>
+            Tomatoes are Lebanon's second most important crop after
+            potatoes. Since the economic crisis, and the wars that have
+            followed it, agriculture has taken a real hit — and tomato
+            growers have taken their share of that damage. Lab diagnosis of
+            plant disease is accurate, but it isn't free, and it isn't
+            always fast enough to act on.
+          </p>
+          <p>
+            The goal of this project is not to replace that lab work. It's
+            to give farmers something that costs nothing and can be used
+            constantly — a phone photo of a leaf, checked in seconds,
+            flagged early enough that a small problem doesn't become a lost
+            field.
+          </p>
+        </div>
+        <div class="steps">
+          <div class="step">
+            <span class="step-num">1</span>
+            <div class="step-body">
+              <h3>Free</h3>
+              <p>No lab, no fee, no waiting — just a photo and a phone.</p>
+            </div>
+          </div>
+          <div class="step">
+            <span class="step-num">2</span>
+            <div class="step-body">
+              <h3>Repeatable</h3>
+              <p>Built to be checked often, not saved for when things already look bad.</p>
+            </div>
+          </div>
+          <div class="step">
+            <span class="step-num">3</span>
+            <div class="step-body">
+              <h3>A first pass</h3>
+              <p>A screening tool, not a diagnosis — lab testing still has the final word.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-grid">
+        <div>
+          <h2>The data</h2>
+          <p>
+            Training used two datasets on purpose, not by accident. The
+            first is PlantVillage, chosen for its clarity — clean, sharp
+            leaf images that let the model learn to look deeply into the
+            actual texture and pattern of a leaf rather than guessing from
+            noise. The second is the Pakistan Tomato Leaf dataset, added
+            deliberately to bring in the opposite: photos taken the way a
+            farmer would actually take them, with ordinary lighting and
+            cluttered backgrounds instead of a lab setup.
+          </p>
+          <p>
+            Together, the two datasets push the model to learn the leaf
+            itself, not the photography conditions around it — which
+            matters for a tool that's meant to work on whatever a phone
+            camera happens to capture.
+          </p>
+        </div>
+        <div>
+          <p class="readings-label">Six classes, one per output</p>
+          <div class="class-grid">
+            <div class="class-chip">Healthy</div>
+            <div class="class-chip">Early Blight</div>
+            <div class="class-chip">Late Blight</div>
+            <div class="class-chip">Leaf Mold</div>
+            <div class="class-chip">Leaf Yellow Curl Virus</div>
+            <div class="class-chip">Septoria Leaf Spot</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-grid">
+        <div>
+          <h2>Preparing the images</h2>
+          <p>
+            Every image is resized, normalized, and converted to a tensor
+            before it reaches the network, then grouped into batches of 32.
+            Color is kept — there's no grayscaling — because color is one of
+            the clearest signals of disease on a leaf, and throwing it away
+            would throw away information the model needs.
+          </p>
+          <p>
+            Early on, the model overfit quickly, so the training set (only
+            the training set) gets randomly augmented on the fly: a chance
+            of a horizontal or vertical flip, a shift in brightness and
+            contrast, and a random rotation of up to 20 degrees in either
+            direction. That variation forces the model to learn the shape
+            of the disease instead of memorizing the exact pixels of a
+            training photo.
+          </p>
+        </div>
+        <dl class="spec-list">
+          <div class="spec-row"><dt>Resize</dt><dd>224 × 224</dd></div>
+          <div class="spec-row"><dt>Normalization</dt><dd>Per-channel, then tensor</dd></div>
+          <div class="spec-row"><dt>Batch size</dt><dd>32</dd></div>
+          <div class="spec-row"><dt>Color</dt><dd>Preserved (no grayscale)</dd></div>
+          <div class="spec-row"><dt>Augmentation</dt><dd>Flip · brightness/contrast · ±20° rotation</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>The model</h2>
+      <p>
+        <code>Tomato_classifier</code> is a custom convolutional network,
+        written and trained from scratch rather than fine-tuned from an
+        existing model. Five convolutional layers, each followed by max
+        pooling, shrink a 224 × 224 image down to a 128-channel, 7 × 7 map —
+        6,272 features — before three fully connected layers narrow that
+        down to a single score for each of the six classes.
+      </p>
+
+      
+
+      <div class="architecture-block">
+<pre><code>class Tomato_classifier(nn.Module):
+  def __init__(self):
+    super().__init__()
+
+    # 3 x 224 x 224 in, 32 x 112 x 112 out.
+    self.conv1 = nn.Conv2d(3, 32, kernel_size=3, padding=1)
+    # 32 x 112 x 112 in, 64 x 56 x 56 out.
+    self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
+    # 64 x 56 x 56 in, 128 x 28 x 28 out.
+    self.conv3 = nn.Conv2d(64, 128, kernel_size=3, padding=1)
+    # 128 x 28 x 28 in, 128 x 14 x 14 out.
+    self.conv4 = nn.Conv2d(128, 128, kernel_size=3, padding=1)
+    # 128 x 14 x 14 in, 128 x 7 x 7 out.
+    self.conv5 = nn.Conv2d(128, 128, kernel_size=3, padding=1)
+    self.pool = nn.MaxPool2d(2, 2)
+
+    # 128 x 7 x 7 = 6272 inputs, 6 outputs (one per class)
+    self.fc1 = nn.Linear(6272, 512)
+    self.fc2 = nn.Linear(512, 128)
+    self.fc3 = nn.Linear(128, 6)
+
+  def forward(self, x):
+      x = self.pool(torch.relu(self.conv1(x)))
+      x = self.pool(torch.relu(self.conv2(x)))
+      x = self.pool(torch.relu(self.conv3(x)))
+      x = self.pool(torch.relu(self.conv4(x)))
+      x = self.pool(torch.relu(self.conv5(x)))
+
+      x = torch.flatten(x, start_dim=1)
+
+      x = torch.relu(self.fc1(x))
+      x = torch.relu(self.fc2(x))
+      x = self.fc3(x)
+      return x</code></pre>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-grid">
+        <div>
+          <h2>Training</h2>
+          <p>
+            Every version of the model was trained for up to 50 epochs with
+            Adam and cross-entropy loss, but the 50 was really just a
+            ceiling to leave training running overnight. Checkpointing saved
+            the weights with the lowest validation loss, so the final model
+            is whichever epoch generalized best — not necessarily the last
+            one. The learning rate, 0.0005, was settled on after testing
+            several values against each other.
+          </p>
+        </div>
+        <dl class="spec-list">
+          <div class="spec-row"><dt>Optimizer</dt><dd>Adam</dd></div>
+          <div class="spec-row"><dt>Learning rate</dt><dd>0.0005</dd></div>
+          <div class="spec-row"><dt>Loss function</dt><dd>Cross-entropy</dd></div>
+          <div class="spec-row"><dt>Input size</dt><dd>Resized to 224 × 224</dd></div>
+          <div class="spec-row"><dt>Epochs</dt><dd>Up to 50, with checkpointing</dd></div>
+          <div class="spec-row"><dt>Checkpoint rule</dt><dd>Lowest validation loss</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Fixing a severe case of overfitting</h2>
+      <p>
+        The first working version of the model overfit almost immediately —
+        it was basically memorizing the training set within two epochs.
+        Two changes fixed it: shrinking the fully connected layer by adding
+        more convolution-and-pooling stages, and adding data augmentation
+        to the training set.
+      </p>
+      <div class="compare-grid">
+        <div class="compare-card is-before">
+          <p class="compare-label">Before</p>
+          <ul>
+            <li>3 convolutional layers, one pool after each</li>
+            <li>Linear layer with ~51 million parameters</li>
+            <li>Memorized the training set in ~2 epochs</li>
+          </ul>
+        </div>
+        <div class="compare-card is-after">
+          <p class="compare-label">After</p>
+          <ul>
+            <li>5 convolutional layers, one pool after each</li>
+            <li>Linear layer cut to ~3 million parameters</li>
+            <li>Data augmentation added to training images</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-grid">
+        <div>
+          <h2>Results</h2>
+          <p>
+            With the deeper, narrower architecture and augmented training
+            data, the model converged cleanly instead of memorizing its way
+            to a false 100%.
+          </p>
+        </div>
+        <dl class="spec-list">
+          <div class="spec-row"><dt>Validation loss</dt><dd>0.13</dd></div>
+          <div class="spec-row"><dt>Validation accuracy</dt><dd>95.1%</dd></div>
+          <div class="spec-row"><dt>Classes</dt><dd>6</dd></div>
+        </dl>
+      </div>
     </section>
 
     <section class="section">
@@ -55,14 +294,14 @@
             <span class="step-num">2</span>
             <div class="step-body">
               <h3>Inference</h3>
-              <p>The image is posted to a Flask/PyTorch backend on Render, where the trained CNN scores it against six classes.</p>
+              <p>The image is posted to a FastAPI/PyTorch backend, where the trained CNN scores it against the six classes.</p>
             </div>
           </div>
           <div class="step">
             <span class="step-num">3</span>
             <div class="step-body">
               <h3>Reading</h3>
-              <p>Scores come back, get sorted by confidence, and are rendered as the readout you see on the diagnose page.</p>
+              <p>Scores come back, get sorted by confidence, and are rendered as the readout on the diagnose page.</p>
             </div>
           </div>
         </div>
@@ -72,33 +311,25 @@
     <section class="section">
       <div class="section-grid">
         <div>
-          <h2>The model</h2>
+          <h2>No photo on hand?</h2>
           <p>
-            A custom CNN — not a fine-tuned off-the-shelf network — built and
-            trained specifically for this dataset in PyTorch, using Google
-            Colab for GPU training.
+            Not everyone testing the site has a tomato leaf nearby, so the
+            diagnose page also offers a small gallery of sample images you
+            can tap instead of uploading your own. Those samples were held
+            out of both the training and validation sets on purpose — the
+            model has never seen them during training, so a sample result
+            is just as honest a test of the model as a photo you took
+            yourself.
           </p>
         </div>
-        <dl class="spec-list">
-          <div class="spec-row"><dt>Architecture</dt><dd>Custom CNN (convolutional + pooling stack)</dd></div>
-          <div class="spec-row"><dt>Framework</dt><dd>PyTorch</dd></div>
-          <div class="spec-row"><dt>Classes</dt><dd>6</dd></div>
-          <div class="spec-row"><dt>Validation accuracy</dt><dd>~95%</dd></div>
-          <div class="spec-row"><dt>Training environment</dt><dd>Google Colab (GPU)</dd></div>
-        </dl>
-      </div>
-    </section>
-
-    <section class="section">
-      <h2>The six classes</h2>
-      <p>Every photo is scored against each of the following, and the highest score wins.</p>
-      <div class="class-grid">
-        <div class="class-chip">Healthy</div>
-        <div class="class-chip">Early Blight</div>
-        <div class="class-chip">Late Blight</div>
-        <div class="class-chip">Leaf Mold</div>
-        <div class="class-chip">Leaf Yellow Curl Virus</div>
-        <div class="class-chip">eptoria Leaf Spot</div>
+        <div class="note-box">
+          <b>On request</b>
+          <p>
+            Which images were held out, and proof that they weren't used in
+            training, can be provided if needed — e.g. the dataset split
+            manifest used to build the training and validation sets.
+          </p>
+        </div>
       </div>
     </section>
 
@@ -106,22 +337,42 @@
       <div class="section-grid">
         <div>
           <h2>The stack</h2>
-          <p>Frontend and backend are deployed separately, talking over a single POST endpoint.</p>
+          <p>
+            PyTorch and torchvision handle the network, transforms, and
+            datasets; Pillow handles images, especially on the production
+            side. FastAPI serves the model behind a REST endpoint, with
+            uvicorn as the runtime. Training happened on Google Colab, for
+            the GPU. The frontend is plain HTML, CSS, and vanilla JS.
+          </p>
         </div>
         <dl class="spec-list">
+          <div class="spec-row"><dt>Modeling</dt><dd>PyTorch, torchvision</dd></div>
+          <div class="spec-row"><dt>Images</dt><dd>Pillow</dd></div>
+          <div class="spec-row"><dt>Backend</dt><dd>FastAPI, uvicorn</dd></div>
+          <div class="spec-row"><dt>Training</dt><dd>Google Colab (GPU)</dd></div>
           <div class="spec-row"><dt>Frontend</dt><dd>HTML, CSS, vanilla JS</dd></div>
-          <div class="spec-row"><dt>Backend</dt><dd>Python, PyTorch model server</dd></div>
-          <div class="spec-row"><dt>Hosting</dt><dd>Render</dd></div>
-          <div class="spec-row"><dt>Endpoint</dt><dd>POST /predict</dd></div>
         </dl>
       </div>
     </section>
+
+    <section class="section">
+      <div class="note-box">
+        <b>A note on scope</b>
+        <p>
+          Leaf Diagnostics is a screening tool, not a lab. It's meant to be
+          something a farmer can use for free, as often as they want, to
+          catch a problem early — not a substitute for an actual
+          laboratory diagnosis when it matters most.
+        </p>
+      </div>
+    </section>
+
   </div>
 </main>
 
 <footer class="site-footer">
   <div class="wrap">
-    <p>Built with a custom CNN in PyTorch, served from Render.</p>
+    <p>Custom CNN, trained from scratch in PyTorch — final project, LebNet Tech Fellows AI course.</p>
   </div>
 </footer>
 
