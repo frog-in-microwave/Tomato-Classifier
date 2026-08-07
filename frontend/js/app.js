@@ -301,6 +301,49 @@ document.addEventListener("DOMContentLoaded", () => {
     return div.innerHTML;
   }
 
+  function resizeImage(file, maxSize = 1200) {
+    return new Promise((resolve) => {
+      const image = new Image();
+
+      image.onload = () => {
+        let width = image.width;
+        let height = image.height;
+
+        // Keep the aspect ratio
+        if (width > height) {
+          if (width > maxSize) {
+            height = height * (maxSize / width);
+            width = maxSize;
+          }
+        } else {
+          if (height > maxSize) {
+            width = width * (maxSize / height);
+            height = maxSize;
+          }
+        }
+
+        const canvas = document.createElement("canvas");
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext("2d");
+
+        ctx.drawImage(image, 0, 0, width, height);
+
+        canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.8);
+      };
+
+      image.src = URL.createObjectURL(file);
+    });
+  }
+
+
+
+
+
+
+
   async function analyze() {
     if (!currentFile) return;
     setLoading(true);
@@ -309,6 +352,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const formData = new FormData();
       formData.append(CONFIG.FIELD_NAME, currentFile);
+      currentFile = await resizeImage(currentFile, 1200);
 
       const res = await fetch(CONFIG.API_URL, {
         method: "POST",
