@@ -352,7 +352,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const formData = new FormData();
       formData.append(CONFIG.FIELD_NAME, currentFile);
-      currentFile = await resizeImage(currentFile, 1200);
+      currentFile = await resizeImage(currentFile, 400);
 
       const res = await fetch(CONFIG.API_URL, {
         method: "POST",
