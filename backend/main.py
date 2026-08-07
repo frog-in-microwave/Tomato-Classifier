@@ -57,7 +57,7 @@ async def health():
 
 
 @app.post("/predict")
-async def predict(file: UploadFile):
+async def predict(file: UploadFile =  File(...)):
 
     # read the image file and convert it to a PIL Image
     bytes = await file.read()
