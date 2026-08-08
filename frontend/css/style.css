@@ -870,6 +870,97 @@ main {
   height: auto;
 }
 
+@media (max-width: 640px) {
+  .arch-diagram {
+    overflow-x: visible;
+  }
+
+  .arch-diagram svg {
+    display: none;
+  }
+
+  .arch-diagram .diagram-caption {
+    margin-top: 0;
+  }
+
+  .arch-diagram-vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .arch-node {
+    width: 100%;
+    max-width: 220px;
+    border-radius: 8px;
+    padding: 10px 14px;
+    text-align: center;
+    font-family: var(--font-mono);
+  }
+
+  .arch-node .arch-node-name {
+    font-size: 12px;
+    color: var(--text);
+  }
+
+  .arch-node .arch-node-dim {
+    font-size: 10px;
+    color: var(--text-faint);
+    margin-top: 2px;
+  }
+
+  .arch-node.node-input,
+  .arch-node.node-conv,
+  .arch-node.node-fc {
+    background: var(--surface-2);
+    border: 1.5px solid var(--green-dim);
+  }
+
+  .arch-node.node-input {
+    border-color: var(--border);
+  }
+
+  .arch-node.node-flatten {
+    background: var(--surface-2);
+    border: 1.5px dashed var(--text-faint);
+  }
+
+  .arch-node.node-output {
+    background: var(--green);
+    border: 1.5px solid var(--green);
+  }
+
+  .arch-node.node-output .arch-node-name,
+  .arch-node.node-output .arch-node-dim {
+    color: #0e1409;
+  }
+
+  .arch-connector {
+    width: 1.5px;
+    height: 22px;
+    background: var(--border);
+    position: relative;
+  }
+
+  .arch-connector::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 6px solid var(--text-faint);
+  }
+}
+
+@media (min-width: 641px) {
+  .arch-diagram-vertical {
+    display: none;
+  }
+}
+
 .arch-diagram .diagram-caption {
   margin: 10px 0 0;
   font-family: var(--font-mono);

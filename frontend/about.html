@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>About — Leaf Diagnostics</title>
-<meta name="description" content="Leaf Diagnostics: a free tomato leaf disease classifier for Lebanese farmers. Dataset, preprocessing, model architecture, training, and results." />
+<meta name="description" content="Leaf Diagnostics: a free tomato leaf disease classifier for Lebanese farmers. Project deliverable report — abstract, methodology, results, and reflection." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -28,22 +28,31 @@
 <main>
   <div class="wrap">
 
+    <!-- 1. Project Title & Abstract -->
     <section class="hero" style="padding-bottom: 0;">
-      <p class="eyebrow">Final project — LebNet Tech Fellows, AI course</p>
-      <h1 style="font-size: clamp(1.8rem, 7vw, 2.6rem);">A free first read on<br>a sick tomato leaf.</h1>
+      <p class="eyebrow">1 · Project title &amp; abstract</p>
+      <h1 style="font-size: clamp(1.8rem, 7vw, 2.6rem);">Leaf Diagnostics: a free tomato leaf disease classifier for Lebanese farmers</h1>
       <p class="lead">
-        Leaf Diagnostics is a convolutional neural network, trained from
-        scratch in PyTorch, that sorts a photo of a tomato leaf into one of
-        six categories: healthy, or one of five common diseases. It doesn't
-        replace a lab test — but a lab test costs money and time that a lot
-        of farmers in Lebanon don't currently have. This page walks through
-        why the project exists and how it was built.
+        Since Lebanon's economic crisis, and the wars that have followed it,
+        agriculture has taken a real hit — tomatoes, the country's
+        second-most-important crop, included. Lab diagnosis of leaf disease
+        is accurate but costs money and time many farmers no longer have.
+        This project trains a custom convolutional neural network, from
+        scratch in PyTorch, on a combined PlantVillage and Pakistan Tomato
+        Leaf dataset to sort a leaf photo into one of six categories —
+        healthy or one of five diseases — and deploys it as a free web tool
+        anyone can use from a phone. After fixing a severe early overfitting
+        problem, the final model reaches 95.1% validation accuracy (0.13
+        validation loss). The result is not a replacement for a lab, but a
+        free, repeatable first pass that can catch a problem early.
       </p>
     </section>
 
+    <!-- 2. Introduction & Problem Statement -->
     <section class="section">
       <div class="section-grid">
         <div>
+          <p class="eyebrow">2 · Introduction &amp; problem statement</p>
           <h2>Why this exists</h2>
           <p>
             Tomatoes are Lebanon's second most important crop after
@@ -54,8 +63,9 @@
             always fast enough to act on.
           </p>
           <p>
-            The goal of this project is not to replace that lab work. It's
-            to give farmers something that costs nothing and can be used
+            This project (a final submission for the LebNet Tech Fellows AI
+            course) is not trying to replace that lab work. The goal is to
+            give farmers something that costs nothing and can be used
             constantly — a phone photo of a leaf, checked in seconds,
             flagged early enough that a small problem doesn't become a lost
             field.
@@ -65,41 +75,44 @@
           <div class="step">
             <span class="step-num">1</span>
             <div class="step-body">
-              <h3>Free</h3>
-              <p>No lab, no fee, no waiting — just a photo and a phone.</p>
+              <h3>Build it accurately</h3>
+              <p>Train a classifier that separates healthy leaves from five real diseases with confidence.</p>
             </div>
           </div>
           <div class="step">
             <span class="step-num">2</span>
             <div class="step-body">
-              <h3>Repeatable</h3>
-              <p>Built to be checked often, not saved for when things already look bad.</p>
+              <h3>Make it free and open</h3>
+              <p>Deploy it as a public web tool — no lab, no fee, no waiting.</p>
             </div>
           </div>
           <div class="step">
             <span class="step-num">3</span>
             <div class="step-body">
-              <h3>A first pass</h3>
-              <p>A screening tool, not a diagnosis — lab testing still has the final word.</p>
+              <h3>Keep it a first pass</h3>
+              <p>Position it as a screening tool, not a diagnosis — lab testing still has the final word.</p>
             </div>
           </div>
         </div>
       </div>
     </section>
 
+    <!-- 3. Methodology -->
     <section class="section">
       <div class="section-grid">
         <div>
-          <h2>The data</h2>
+          <p class="eyebrow">3 · Methodology</p>
+          <h2>Data</h2>
           <p>
-            Training used two datasets on purpose, not by accident. The
-            first is PlantVillage, chosen for its clarity — clean, sharp
-            leaf images that let the model learn to look deeply into the
-            actual texture and pattern of a leaf rather than guessing from
-            noise. The second is the Pakistan Tomato Leaf dataset, added
-            deliberately to bring in the opposite: photos taken the way a
-            farmer would actually take them, with ordinary lighting and
-            cluttered backgrounds instead of a lab setup.
+            Training used two datasets on purpose, not by accident, totaling
+            roughly 10,900 images across six classes. The first is
+            PlantVillage, chosen for its clarity — clean, sharp leaf images
+            that let the model learn to look deeply into the actual texture
+            and pattern of a leaf rather than guessing from noise. The
+            second is the Pakistan Tomato Leaf dataset, added deliberately
+            to bring in the opposite: photos taken the way a farmer would
+            actually take them, with ordinary lighting and cluttered
+            backgrounds instead of a lab setup.
           </p>
           <p>
             Together, the two datasets push the model to learn the leaf
@@ -127,11 +140,11 @@
         <div>
           <h2>Preparing the images</h2>
           <p>
-            Every image is resized, normalized, and converted to a tensor
-            before it reaches the network, then grouped into batches of 32.
-            Color is kept — there's no grayscaling — because color is one of
-            the clearest signals of disease on a leaf, and throwing it away
-            would throw away information the model needs.
+            Every image is resized to 224 × 224, normalized, and converted
+            to a tensor before it reaches the network, then grouped into
+            batches of 32. Color is kept — there's no grayscaling — because
+            color is one of the clearest signals of disease on a leaf, and
+            throwing it away would throw away information the model needs.
           </p>
           <p>
             Early on, the model overfit quickly, so the training set (only
@@ -164,7 +177,88 @@
         down to a single score for each of the six classes.
       </p>
 
-      
+      <div class="arch-diagram">
+        <svg viewBox="0 0 900 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram of the network narrowing from a 224 by 224 input image through five convolutional layers down to a 6-class output">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" class="diagram-arrowhead" />
+            </marker>
+          </defs>
+
+          <line x1="86" y1="195" x2="124" y2="195" class="diagram-line" marker-end="url(#arrow)" />
+          <line x1="180" y1="195" x2="218" y2="195" class="diagram-line" marker-end="url(#arrow)" />
+          <line x1="274" y1="195" x2="312" y2="195" class="diagram-line" marker-end="url(#arrow)" />
+          <line x1="368" y1="195" x2="406" y2="195" class="diagram-line" marker-end="url(#arrow)" />
+          <line x1="462" y1="195" x2="500" y2="195" class="diagram-line" marker-end="url(#arrow)" />
+          <line x1="556" y1="195" x2="594" y2="195" class="diagram-line" marker-end="url(#arrow)" />
+          <line x1="620" y1="195" x2="658" y2="195" class="diagram-line" marker-end="url(#arrow)" />
+          <line x1="704" y1="195" x2="742" y2="195" class="diagram-line" marker-end="url(#arrow)" />
+          <line x1="788" y1="195" x2="826" y2="195" class="diagram-line" marker-end="url(#arrow)" />
+
+          <rect x="30" y="50" width="56" height="150" rx="6" class="node-input" />
+          <rect x="124" y="80" width="56" height="120" rx="6" class="node-conv" />
+          <rect x="218" y="105" width="56" height="95" rx="6" class="node-conv" />
+          <rect x="312" y="126" width="56" height="74" rx="6" class="node-conv" />
+          <rect x="406" y="142" width="56" height="58" rx="6" class="node-conv" />
+          <rect x="500" y="156" width="56" height="44" rx="6" class="node-conv" />
+          <rect x="594" y="110" width="26" height="90" rx="4" class="node-flatten" />
+          <rect x="658" y="136" width="46" height="64" rx="6" class="node-fc" />
+          <rect x="742" y="164" width="46" height="36" rx="6" class="node-fc" />
+          <rect x="826" y="180" width="28" height="20" rx="5" class="node-output" />
+
+          <text x="58" y="216" class="diagram-label">Input</text>
+          <text x="58" y="228" class="diagram-sublabel">3×224×224</text>
+
+          <text x="152" y="216" class="diagram-label">Conv1</text>
+          <text x="152" y="228" class="diagram-sublabel">32×112²</text>
+
+          <text x="246" y="216" class="diagram-label">Conv2</text>
+          <text x="246" y="228" class="diagram-sublabel">64×56²</text>
+
+          <text x="340" y="216" class="diagram-label">Conv3</text>
+          <text x="340" y="228" class="diagram-sublabel">128×28²</text>
+
+          <text x="434" y="216" class="diagram-label">Conv4</text>
+          <text x="434" y="228" class="diagram-sublabel">128×14²</text>
+
+          <text x="528" y="216" class="diagram-label">Conv5</text>
+          <text x="528" y="228" class="diagram-sublabel">128×7²</text>
+
+          <text x="607" y="216" class="diagram-label">Flatten</text>
+          <text x="607" y="228" class="diagram-sublabel">6,272</text>
+
+          <text x="681" y="216" class="diagram-label">FC1</text>
+          <text x="681" y="228" class="diagram-sublabel">512</text>
+
+          <text x="765" y="216" class="diagram-label">FC2</text>
+          <text x="765" y="228" class="diagram-sublabel">128</text>
+
+          <text x="840" y="216" class="diagram-label">Output</text>
+          <text x="840" y="228" class="diagram-sublabel">6 classes</text>
+        </svg>
+        <div class="arch-diagram-vertical">
+          <div class="arch-node node-input"><div class="arch-node-name">Input</div><div class="arch-node-dim">3×224×224</div></div>
+          <div class="arch-connector"></div>
+          <div class="arch-node node-conv"><div class="arch-node-name">Conv1</div><div class="arch-node-dim">32×112²</div></div>
+          <div class="arch-connector"></div>
+          <div class="arch-node node-conv"><div class="arch-node-name">Conv2</div><div class="arch-node-dim">64×56²</div></div>
+          <div class="arch-connector"></div>
+          <div class="arch-node node-conv"><div class="arch-node-name">Conv3</div><div class="arch-node-dim">128×28²</div></div>
+          <div class="arch-connector"></div>
+          <div class="arch-node node-conv"><div class="arch-node-name">Conv4</div><div class="arch-node-dim">128×14²</div></div>
+          <div class="arch-connector"></div>
+          <div class="arch-node node-conv"><div class="arch-node-name">Conv5</div><div class="arch-node-dim">128×7²</div></div>
+          <div class="arch-connector"></div>
+          <div class="arch-node node-flatten"><div class="arch-node-name">Flatten</div><div class="arch-node-dim">6,272</div></div>
+          <div class="arch-connector"></div>
+          <div class="arch-node node-fc"><div class="arch-node-name">FC1</div><div class="arch-node-dim">512</div></div>
+          <div class="arch-connector"></div>
+          <div class="arch-node node-fc"><div class="arch-node-name">FC2</div><div class="arch-node-dim">128</div></div>
+          <div class="arch-connector"></div>
+          <div class="arch-node node-output"><div class="arch-node-name">Output</div><div class="arch-node-dim">6 classes</div></div>
+        </div>
+        <p class="diagram-caption">Every conv block is followed by ReLU and a 2×2 max pool, which is what halves the spatial size at each step.</p>
+      </div>
 
       <div class="architecture-block">
 <pre><code>class Tomato_classifier(nn.Module):
@@ -204,10 +298,12 @@
       </div>
     </section>
 
+    <!-- 4. Implementation Details & Results -->
     <section class="section">
       <div class="section-grid">
         <div>
-          <h2>Training</h2>
+          <p class="eyebrow">4 · Implementation details &amp; results</p>
+          <h2>Training setup</h2>
           <p>
             Every version of the model was trained for up to 50 epochs with
             Adam and cross-entropy loss, but the 50 was really just a
@@ -230,48 +326,24 @@
     </section>
 
     <section class="section">
-      <h2>Fixing a severe case of overfitting</h2>
-      <p>
-        The first working version of the model overfit almost immediately —
-        it was basically memorizing the training set within two epochs.
-        Two changes fixed it: shrinking the fully connected layer by adding
-        more convolution-and-pooling stages, and adding data augmentation
-        to the training set.
-      </p>
-      <div class="compare-grid">
-        <div class="compare-card is-before">
-          <p class="compare-label">Before</p>
-          <ul>
-            <li>3 convolutional layers, one pool after each</li>
-            <li>Linear layer with ~51 million parameters</li>
-            <li>Memorized the training set in ~2 epochs</li>
-          </ul>
-        </div>
-        <div class="compare-card is-after">
-          <p class="compare-label">After</p>
-          <ul>
-            <li>5 convolutional layers, one pool after each</li>
-            <li>Linear layer cut to ~3 million parameters</li>
-            <li>Data augmentation added to training images</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
       <div class="section-grid">
         <div>
-          <h2>Results</h2>
+          <h2>Frameworks &amp; deployment</h2>
           <p>
-            With the deeper, narrower architecture and augmented training
-            data, the model converged cleanly instead of memorizing its way
-            to a false 100%.
+            PyTorch and torchvision handle the network, transforms, and
+            datasets; Pillow handles images, especially on the production
+            side. FastAPI serves the model behind a REST endpoint, with
+            uvicorn as the runtime. Training happened on Google Colab, for
+            the GPU. The frontend is plain HTML, CSS, and vanilla JS, and
+            calls a single <code>POST /predict</code> endpoint.
           </p>
         </div>
         <dl class="spec-list">
-          <div class="spec-row"><dt>Validation loss</dt><dd>0.13</dd></div>
-          <div class="spec-row"><dt>Validation accuracy</dt><dd>95.1%</dd></div>
-          <div class="spec-row"><dt>Classes</dt><dd>6</dd></div>
+          <div class="spec-row"><dt>Modeling</dt><dd>PyTorch, torchvision</dd></div>
+          <div class="spec-row"><dt>Images</dt><dd>Pillow</dd></div>
+          <div class="spec-row"><dt>Backend</dt><dd>FastAPI, uvicorn</dd></div>
+          <div class="spec-row"><dt>Training</dt><dd>Google Colab (GPU)</dd></div>
+          <div class="spec-row"><dt>Frontend</dt><dd>HTML, CSS, vanilla JS</dd></div>
         </dl>
       </div>
     </section>
@@ -294,7 +366,7 @@
             <span class="step-num">2</span>
             <div class="step-body">
               <h3>Inference</h3>
-              <p>The image is posted to a FastAPI/PyTorch backend, where the trained CNN scores it against the six classes.</p>
+              <p>The image is posted to the FastAPI/PyTorch backend, where the trained CNN scores it against the six classes.</p>
             </div>
           </div>
           <div class="step">
@@ -336,22 +408,82 @@
     <section class="section">
       <div class="section-grid">
         <div>
-          <h2>The stack</h2>
+          <h2>Results</h2>
           <p>
-            PyTorch and torchvision handle the network, transforms, and
-            datasets; Pillow handles images, especially on the production
-            side. FastAPI serves the model behind a REST endpoint, with
-            uvicorn as the runtime. Training happened on Google Colab, for
-            the GPU. The frontend is plain HTML, CSS, and vanilla JS.
+            With the deeper, narrower architecture and augmented training
+            data (see the analysis below), the model converged cleanly
+            instead of memorizing its way to a false 100%.
           </p>
         </div>
         <dl class="spec-list">
-          <div class="spec-row"><dt>Modeling</dt><dd>PyTorch, torchvision</dd></div>
-          <div class="spec-row"><dt>Images</dt><dd>Pillow</dd></div>
-          <div class="spec-row"><dt>Backend</dt><dd>FastAPI, uvicorn</dd></div>
-          <div class="spec-row"><dt>Training</dt><dd>Google Colab (GPU)</dd></div>
-          <div class="spec-row"><dt>Frontend</dt><dd>HTML, CSS, vanilla JS</dd></div>
+          <div class="spec-row"><dt>Validation loss</dt><dd>0.13</dd></div>
+          <div class="spec-row"><dt>Validation accuracy</dt><dd>95.1%</dd></div>
+          <div class="spec-row"><dt>Classes</dt><dd>6</dd></div>
         </dl>
+      </div>
+    </section>
+
+    <!-- 5. Discussion & Analysis -->
+    <section class="section">
+      <p class="eyebrow">5 · Discussion &amp; analysis</p>
+      <h2>Fixing a severe case of overfitting</h2>
+      <p>
+        The first working version of the model overfit almost immediately —
+        it was basically memorizing the training set within two epochs.
+        Two changes fixed it: shrinking the fully connected layer by adding
+        more convolution-and-pooling stages, and adding data augmentation
+        to the training set. That the fix worked — validation loss dropping
+        cleanly to 0.13 instead of diverging — supports the underlying
+        hypothesis: the original bottleneck wasn't the problem's difficulty,
+        it was a linear layer with far more capacity than the dataset could
+        justify.
+      </p>
+      <div class="compare-grid">
+        <div class="compare-card is-before">
+          <p class="compare-label">Before</p>
+          <ul>
+            <li>3 convolutional layers, one pool after each</li>
+            <li>Linear layer with ~51 million parameters</li>
+            <li>Memorized the training set in ~2 epochs</li>
+          </ul>
+        </div>
+        <div class="compare-card is-after">
+          <p class="compare-label">After</p>
+          <ul>
+            <li>5 convolutional layers, one pool after each</li>
+            <li>Linear layer cut to ~3 million parameters</li>
+            <li>Data augmentation added to training images</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-grid">
+        <div>
+          <h2>Limitations</h2>
+          <p>
+            Neither source dataset was collected in Lebanon, so local
+            cultivars, growing conditions, and disease presentation may
+            look somewhat different from what the model was trained on.
+            The model is also single-label — it assumes one dominant
+            condition per leaf, so it isn't built to flag a leaf showing
+            two problems at once. And it hasn't yet been tested in the
+            field against real Lebanese farmers taking real photos under
+            real conditions, only against held-out data from the same two
+            source datasets.
+          </p>
+        </div>
+        <div>
+          <h2>Future work</h2>
+          <p>
+            The clearest next steps are field validation with local
+            farmers, expanding the dataset with Lebanese-sourced images to
+            close that distribution gap, adding more disease and pest
+            classes, and exploring an on-device or offline mode for areas
+            with unreliable connectivity.
+          </p>
+        </div>
       </div>
     </section>
 
@@ -367,12 +499,37 @@
       </div>
     </section>
 
+    <!-- 6. Reflection on Learnings -->
+    <section class="section">
+      <p class="eyebrow">6 · Reflection on learnings</p>
+      <h2>What this project was like to build</h2>
+      <p>
+        The most rewarding part was tying a technical project to something
+        real — Lebanese agriculture, after a period that's been hard on it.
+        Watching the pipeline go from a raw dataset to a working, deployed
+        tool that a farmer could actually open on their phone made the
+        machine learning theory feel like it had a point.
+      </p>
+      <p>
+        The biggest challenge by far was the overfitting: watching a model
+        hit near-perfect training accuracy in a couple of epochs while
+        validation accuracy went nowhere was a good, humbling lesson in
+        what "capacity" actually means for a linear layer, and checkpointing
+        on validation loss rather than trusting the last epoch turned out to
+        matter a lot. A second, quieter challenge was a bug where training
+        metrics looked stuck at random-initialization levels no matter what
+        changed — eventually traced to the optimizer being handed the wrong
+        model's parameters. It was a reminder that a silently wrong setup
+        can look a lot like a hard problem until you go line by line.
+      </p>
+    </section>
+
   </div>
 </main>
 
 <footer class="site-footer">
   <div class="wrap">
-    <p>Custom CNN, trained from scratch in PyTorch — final project, LebNet Tech Fellows AI course.</p>
+    <p>Custom CNN, trained from scratch in PyTorch — final project, LebNet Tech Fellows AI course. Done by Yousef Abdallah.</p>
   </div>
 </footer>
 
