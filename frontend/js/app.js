@@ -351,6 +351,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       currentFile = await resizeImage(currentFile, 400);
+      console.log("Resized image size:", currentFile.size, "bytes");
       const formData = new FormData();
       formData.append(CONFIG.FIELD_NAME, currentFile);
 
